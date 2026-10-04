@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function validItem(item) {
+      return item.keys().hasOnly(['id', 'name', 'checked'])
+        && item.id.matches('^.{1,80}$')
+        && item.name.matches('^.{1,200}$')
+        && item.checked is bool;
+    }
+    function validAt(items, index) {
+      return items.size() <= index || validItem(items[index]);
+    }
+    function validList(data) {
+      return data.keys().hasAll(['items']) && data.keys().hasOnly(['items'])
+        && data.items is list && data.items.size() <= 20
+        && validAt(data.items, 0)
+        && validAt(data.items, 1)
+        && validAt(data.items, 2)
+        && validAt(data.items, 3)
+        && validAt(data.items, 4)
+        && validAt(data.items, 5)
+        && validAt(data.items, 6)
+        && validAt(data.items, 7)
+        && validAt(data.items, 8)
+        && validAt(data.items, 9)
+        && validAt(data.items, 10)
+        && validAt(data.items, 11)
+        && validAt(data.items, 12)
+        && validAt(data.items, 13)
+        && validAt(data.items, 14)
+        && validAt(data.items, 15)
+        && validAt(data.items, 16)
+        && validAt(data.items, 17)
+        && validAt(data.items, 18)
+        && validAt(data.items, 19);
+    }
+    // Public access to exactly one list. No login, queries, or document deletion.
+    match /lists/courses {
+      allow get: if true;
+      allow create, update: if validList(request.resource.data);
+    }
+    // Everything else is denied by default.
+  }
+}

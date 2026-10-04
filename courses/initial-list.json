@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "id": "citron",
+      "name": "4–5 citrons verts",
+      "checked": false
+    },
+    {
+      "id": "concombre",
+      "name": "Concombre",
+      "checked": false
+    },
+    {
+      "id": "menthe",
+      "name": "Menthe",
+      "checked": false
+    },
+    {
+      "id": "mangue",
+      "name": "Mangue (la plus mûre possible)",
+      "checked": false
+    },
+    {
+      "id": "salade",
+      "name": "Salade",
+      "checked": false
+    }
+  ]
+}

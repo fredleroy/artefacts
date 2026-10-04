@@ -1,0 +1,26 @@
+name: Deploy Firestore rules
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Deploy rules
+        env:
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          test -n "$FIREBASE_PROJECT_ID"
+          test -n "$FIREBASE_SERVICE_ACCOUNT"
+          credential_file="$RUNNER_TEMP/firebase-credentials.json"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$credential_file"
+          chmod 600 "$credential_file"
+          export GOOGLE_APPLICATION_CREDENTIALS="$credential_file"
+          trap 'rm -f "$credential_file"' EXIT
+          npx --yes firebase-tools@14.22.0 deploy --only firestore:rules --project "$FIREBASE_PROJECT_ID" --non-interactive
