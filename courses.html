@@ -26,6 +26,7 @@ const key='artefacts-courses-v1';
 let items=[];
 try{const data=JSON.parse(localStorage.getItem(key)||JSON.stringify([{id:'citron',name:'4–5 citrons verts',done:false},{id:'concombre',name:'Concombre',done:false},{id:'menthe',name:'Menthe',done:false},{id:'mangue',name:'Mangue (la plus mûre possible)',done:false}]));if(Array.isArray(data))items=data.filter(x=>x&&typeof x.id==='string'&&typeof x.name==='string'&&typeof x.done==='boolean')}catch(e){document.getElementById('error').hidden=false}
 for(const item of items){if(item.id==='citron' && item.name==='Citrons verts')item.name='4–5 citrons verts'}
+try{if(!localStorage.getItem('artefacts-courses-salad-added-v1')){if(!items.some(x=>x.id==='salade'))items.push({id:'salade',name:'Salade',done:false});localStorage.setItem(key,JSON.stringify(items));localStorage.setItem('artefacts-courses-salad-added-v1','1')}}catch(e){if(!items.some(x=>x.id==='salade'))items.push({id:'salade',name:'Salade',done:false});document.getElementById('error').hidden=false}
 const list=document.getElementById('list'),input=document.getElementById('article');
 function save(){try{localStorage.setItem(key,JSON.stringify(items))}catch(e){document.getElementById('error').hidden=false}render()}
 function render(){
