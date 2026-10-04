@@ -1,0 +1,25 @@
+{
+  "tripId": "2026-10-04",
+  "items": [
+    {
+      "id": "citron",
+      "name": "4–5 citrons verts"
+    },
+    {
+      "id": "concombre",
+      "name": "Concombre"
+    },
+    {
+      "id": "menthe",
+      "name": "Menthe"
+    },
+    {
+      "id": "mangue",
+      "name": "Mangue (la plus mûre possible)"
+    },
+    {
+      "id": "salade",
+      "name": "Salade"
+    }
+  ]
+}
