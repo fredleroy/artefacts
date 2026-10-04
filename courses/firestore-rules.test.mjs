@@ -1,0 +1,25 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+const host=process.env.FIRESTORE_EMULATOR_HOST;
+const value=x=>typeof x==='string'?{stringValue:x}:typeof x==='boolean'?{booleanValue:x}:Array.isArray(x)?{arrayValue:{values:x.map(value)}}:{mapValue:{fields:Object.fromEntries(Object.entries(x).map(([k,v])=>[k,value(v)]))}};
+const item=i=>({id:String(i),name:'Article '+i,checked:false});
+test('public rules permit exactly one bounded, validated list',{skip:!host},async()=>{
+ const base=`http://${host}/v1/projects/demo-artefacts/databases/(default)/documents/`;
+ const write=async(path,data)=>fetch(base+path,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:Object.fromEntries(Object.entries(data).map(([k,v])=>[k,value(v)]))})});
+ assert.equal((await write('lists/courses',{items:Array.from({length:20},(_,i)=>item(i))})).status,200);
+ assert.equal((await fetch(base+'lists/courses')).status,200);
+ assert.equal((await write('lists/courses',{items:Array.from({length:21},(_,i)=>item(i))})).status,403);
+ assert.equal((await write('lists/courses',{items:[{...item(0),name:'x'.repeat(201)}]})).status,403);
+ assert.equal((await write('lists/courses',{items:[{...item(0),checked:'yes'}]})).status,403);
+ assert.equal((await write('lists/courses',{items:[{...item(0),extra:'x'}]})).status,403);
+ assert.equal((await write('lists/courses',{items:[],extra:'x'})).status,403);
+ assert.equal((await write('lists/courses',{items:[{id:'x',name:'Missing checked'}]})).status,403);
+ assert.equal((await write('lists/courses',{items:[{...item(0),name:false}]})).status,403);
+ assert.equal((await write('lists/courses',{items:[{...item(0),id:''}]})).status,403);
+ assert.equal((await write('lists/courses',{items:'not a list'})).status,403);
+ assert.equal((await write('lists/other',{items:[]})).status,403);
+ assert.equal((await fetch(base+'lists/other')).status,403);
+ assert.equal((await fetch(base+'lists')).status,403);
+ assert.equal((await fetch(base+'lists/courses',{method:'DELETE'})).status,403);
+ assert.equal((await write('lists/courses',{items:[]})).status,200);
+});
